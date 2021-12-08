@@ -1,0 +1,50 @@
+.tagging_helper_container {
+    cursor: Default;
+    width: 100%;
+    text-align: right;
+}
+
+.tagging_helper_block {
+    cursor: Default;
+    text-align: left;
+    margin: 10px 0;
+    line-height: 1.8em;
+}
+
+.taghelper_tag {
+    cursor: Default;
+    color: #41687b;
+    margin: 0 5px;
+    white-space: nowrap;
+}
+
+.taghelper_tag:hover {
+    cursor: Pointer;
+    color: #246;
+    text-decoration: underline;
+}
+
+.taghelper_tag_selected {
+    cursor: Default;
+    color: #41687b;
+    background-color: #bcd;
+    margin: 0 5px;
+    white-space: nowrap;
+}
+
+.taghelper_tag_selected:hover {
+    cursor: Pointer;
+    color: #246;
+    text-decoration: underline;
+}
+
+.taghelper_command {
+    cursor: Default;
+    color: #61889b;
+    margin-left: 11px;
+}
+
+.taghelper_command:hover {
+    cursor: Pointer;
+    color: #a2ad00;
+}

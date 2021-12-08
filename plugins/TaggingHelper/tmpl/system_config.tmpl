@@ -1,0 +1,14 @@
+<mtapp:setting
+	id="tagging_helper_content_data_tag_target"
+	label="<__trans phrase="Content data tag target">">
+
+	<div class="custom-control custom-radio mb-3">
+		<input type="radio" class="custom-control-input" id="content_data_tag_target_all" name="content_data_tag_target" value="all" <mt:if name="content_data_tag_target" eq="all">checked="checked"</mt:if> />
+		<label class="custom-control-label" for="content_data_tag_target_all"><__trans phrase="All sites tags"></label>
+	</div>
+
+	<div class="custom-control custom-radio mb-3">
+		<input type="radio" class="custom-control-input" id="content_data_tag_target_same_field" name="content_data_tag_target" value="same_field" <mt:if name="content_data_tag_target" eq="same_field">checked="checked"</mt:if> />
+		<label class="custom-control-label" for="content_data_tag_target_same_field"><__trans phrase="Same field tags"></label>
+	</div>
+</mtapp:setting>

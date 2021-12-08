@@ -6,18 +6,23 @@ use MT::Plugin;
 @MT::Plugin::TaggingHelper::ISA = qw(MT::Plugin);
 
 use vars qw($PLUGIN_NAME $VERSION);
-$PLUGIN_NAME = 'TaggingHelper';
-$VERSION = '0.5.1';
+$PLUGIN_NAME = 'Tagging Helper for ContentData';
+$VERSION = '1.0.1';
 
 use MT;
 my $plugin = new MT::Plugin::TaggingHelper({
+    id => "TaggingHelper",
     name => $PLUGIN_NAME,
     version => $VERSION,
     description => "<MT_TRANS phrase='description of TaggingHelper'>",
-    doc_link => 'http://blog.aklaswad.com/mtplugins/tagginghelper/',
-    author_name => 'akira sawada',
-    author_link => 'http://blog.aklaswad.com/',
+    doc_link => 'https://ark-web.jp',
+    author_name => 'ARK-Web',
+    author_link => 'https://ark-web.jp',
     l10n_class => 'TaggingHelper::L10N',
+    system_config_template => 'system_config.tmpl',
+    settings => new MT::PluginSettings([
+        [ 'content_data_tag_target', { Default => 'all', Scope => 'system' }],
+    ]),
 });
 
 MT->add_plugin($plugin);
@@ -35,22 +40,28 @@ elsif ($mt_version =~ /^4/){
 elsif ($mt_version =~ /^7/){
     MT->add_callback('template_source.edit_entry', 9, $plugin, \&hdlr_mt7_source_edit_entry);
     MT->add_callback('template_param.edit_entry', 9, $plugin, \&hdlr_mt7_param_edit_entry);
+
+    MT->add_callback('template_source.edit_content_data', 9, $plugin, '$TaggingHelper::TaggingHelper::ContentData::template_source_edit_content_data');
+    MT->add_callback('template_param.edit_content_data', 9, $plugin, '$TaggingHelper::TaggingHelper::ContentData::template_param_edit_content_data');
+    MT->add_callback('template_source.field_html_tags', 9, $plugin, '$TaggingHelper::TaggingHelper::ContentData::template_source_field_html_tags');
 }
 else {
     MT->add_callback('MT::App::CMS::AppTemplateSource.edit_entry', 9, $plugin, \&hdlr_mt3_source);
 }
 
 sub _build_html {
-    my $html = <<'EOT';
+    my ($without_css) = @_;
+
+    my $css = <<'CSS';
 <style type="text/css">
 
-#tagging_helper_container {
+.tagging_helper_container {
     cursor: Default;
     width: 100%;
     text-align: right;
 }
 
-#tagging_helper_block {
+.tagging_helper_block {
     cursor: Default;
     text-align: left;
     margin: 10px 0;
@@ -96,7 +107,10 @@ sub _build_html {
 }
 
 </style>
+CSS
 
+    my $html = <<'EOT';
+<__trans_section component="TaggingHelper">
 <script type="text/javascript">
 // simple js syntax, because MT3.3 dosen't have js library.
 // just use RegExp.escape; which appear both MT3.3 and MT4. 
@@ -104,6 +118,7 @@ sub _build_html {
 var TaggingHelper = new Object();
 
 TaggingHelper.close = function() {
+
     document.getElementById('tagging_helper_block').style.display = 'none';
 }
 
@@ -147,7 +162,8 @@ TaggingHelper.open = function (mode) {
     var taglist = '';
     var table = document.createElement('div');
     table.className = 'taghelper-table';
-    for (var i=0; i< tagary.length; i++) {
+    if (tagary.length > 0) {
+      for (var i=0; i< tagary.length; i++) {
         var tag = tagary[i];
         var e = document.createElement('span');
         e.onclick   = TaggingHelper.action;
@@ -155,6 +171,12 @@ TaggingHelper.open = function (mode) {
         e.appendChild( document.createTextNode(tag) );
         var exp = new RegExp("^(.*, ?)?" + RegExp.escape(tag) + "( ?\,.*)?$");
         e.className = (exp.test(v)) ? 'taghelper_tag_selected' : 'taghelper_tag';
+        table.appendChild(e);
+        table.appendChild( document.createTextNode(' ') );
+      }
+    } else {
+        var e = document.createElement('span');
+        e.appendChild( document.createTextNode('<__trans phrase="No data">') );
         table.appendChild(e);
         table.appendChild( document.createTextNode(' ') );
     }
@@ -191,13 +213,14 @@ TaggingHelper.action = function (evt) {
 }
 
 </script>
-<div id="tagging_helper_container">
+<div id="tagging_helper_container" class="tagging_helper_container">
     <span id="taghelper_abc" onclick="TaggingHelper.open('abc')" class="taghelper_command"><MT_TRANS phrase="alphabetical"></span>
     <span id="taghelper_count" onclick="TaggingHelper.open('count')" class="taghelper_command"><MT_TRANS phrase="frequency"></span>
     <span id="taghelper_match" onclick="TaggingHelper.open('match')" class="taghelper_command"><MT_TRANS phrase="match in body"></span>
     <span id="taghelper_close" onclick="TaggingHelper.close()" class="taghelper_command"><MT_TRANS phrase="close"></span>
-<div id="tagging_helper_block" style="display: none;"></div>
+<div id="tagging_helper_block" class="tagging_helper_block" style="display: none;"></div>
 </div>
+</__trans_section>
 EOT
 
     my $getbody3 = <<'EOT';
@@ -232,6 +255,9 @@ TaggingHelper.getBody = function () {
 }
 EOT
 
+    unless ($without_css) {
+        $html .= $css;
+    }
     my $getbody = ($mt_version =~ /^[45]/) ? $getbody4 : $getbody3;
     $getbody = $getbody7 if $mt_version =~ /^[67]/;
     $html =~ s/__getbody/$getbody/;
@@ -305,7 +331,12 @@ sub hdlr_mt5_param {
 sub hdlr_mt7_source_edit_entry {
     my ($eh, $app, $tmpl_ref) = @_;
 
-    my $html = _build_html();
+    my $html = <<'EOT';
+<mt:setvarblock name="css_include" append="1">
+<link rel="stylesheet" href="<mt:var name="static_uri">plugins/TaggingHelper/tagging-helper.css" type="text/css"></mt:setvarblock>
+EOT
+    $html .= _build_html('without_css');
+#    $html .= _build_html();
     my $pattern = q(<input .*?id="tags".*?/>);
     die 'not found id="tags"'
         unless ($$tmpl_ref =~ m/$pattern/s);
