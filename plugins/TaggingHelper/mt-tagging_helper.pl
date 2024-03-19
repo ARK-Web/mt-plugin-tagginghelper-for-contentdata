@@ -7,7 +7,7 @@ use MT::Plugin;
 
 use vars qw($PLUGIN_NAME $VERSION);
 $PLUGIN_NAME = 'Tagging Helper for ContentData';
-$VERSION = '1.0.1';
+$VERSION = '1.1.0';
 
 use MT;
 my $plugin = new MT::Plugin::TaggingHelper({
@@ -37,7 +37,7 @@ elsif ($mt_version =~ /^5/){
 elsif ($mt_version =~ /^4/){
     MT->add_callback('template_param.edit_entry', 9, $plugin, \&hdlr_mt4_param);
 }
-elsif ($mt_version =~ /^7/){
+elsif ($mt_version =~ /^7/ || $mt_version =~ /^8/){
     MT->add_callback('template_source.edit_entry', 9, $plugin, \&hdlr_mt7_source_edit_entry);
     MT->add_callback('template_param.edit_entry', 9, $plugin, \&hdlr_mt7_param_edit_entry);
 
@@ -259,7 +259,7 @@ EOT
         $html .= $css;
     }
     my $getbody = ($mt_version =~ /^[45]/) ? $getbody4 : $getbody3;
-    $getbody = $getbody7 if $mt_version =~ /^[67]/;
+    $getbody = $getbody7 if $mt_version =~ /^[678]/;
     $html =~ s/__getbody/$getbody/;
     return $plugin->translate_templatized($html);
 }

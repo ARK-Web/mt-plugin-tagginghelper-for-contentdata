@@ -268,7 +268,7 @@ sub get_tags {
 
     my %terms;
     if ($cf) {
-        $terms{cf_id} = $cf->{content_field_id};
+        $terms{cf_id} = $cf->{id};
     }
     my $iter = MT->model('objecttag')->count_group_by(
         \%terms,

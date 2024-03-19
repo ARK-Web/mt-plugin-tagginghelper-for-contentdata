@@ -1,10 +1,10 @@
-「Tagging Helper for ContentData」 MT7のコンテンツタイプに対応したタグ入力支援プラグイン
+「Tagging Helper for ContentData」 MT7/MT8のコンテンツタイプに対応したタグ入力支援プラグイン
 ====
 
 ## プラグイン概要
 タグ入力欄の下に、既存のタグが候補として一覧表示され、1クリックで目的のタグを入力できます。  
   
-本プラグインは aklaswad さんの「Tagging Helper」をベースに、MT7のコンテンツデータで使えるよう拡張したものです。  
+本プラグインは aklaswad さんの「Tagging Helper」をベースに、MT7/MT8のコンテンツデータで使えるよう拡張したものです。  
 ※ 元の「Tagging Helper」をMT6/7で動くようにしたバージョン（コンテンツデータ非対応）をこちらに置いてあります。  
 [https://github.com/ARK-Web/mt-plugin-tagging-helper](https://github.com/ARK-Web/mt-plugin-tagging-helper)  
 
